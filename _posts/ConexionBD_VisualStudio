@@ -1,0 +1,10 @@
+ class Conexion
+    {
+        public static SqlConnection obtenerconexion()
+        {
+            SqlConnection conn = new SqlConnection("Data Source= DESKTOP-HC75JJL\\SQLEXPRESS; Initial Catalog= NAMEBD; Integrated Security= true");
+            conn.Open();
+            return conn;
+        }
+     
+    }
