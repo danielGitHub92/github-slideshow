@@ -1,0 +1,179 @@
+ public partial class Memorama : Form
+    {
+        int TamainColumnasFilas = 4;
+        int Movimiento = 0;
+        int CantidadDeCartasVolteadas = 0;
+        List<string> CartasEnumeradas;
+        List<string> CartasRevueltas;
+        ArrayList CartasSeleccionadas;
+        PictureBox CartaTemporal1;
+        PictureBox CartaTemporal2;
+        int CartaActual = 0;
+        public Memorama()
+        {
+            InitializeComponent();
+            iniciarjuego();
+            Bitmap img = new Bitmap(Application.StartupPath + @"\img\ii3.jpg");
+            this.BackgroundImage = img;
+            this.BackgroundImageLayout = ImageLayout.Stretch;
+        }
+        public void iniciarjuego()
+        {
+            timer1.Enabled = false;
+            timer1.Stop();
+            label2.Text = "0";
+            CantidadDeCartasVolteadas = 0;
+            Movimiento = 0;
+            paneljuego.Controls.Clear();
+            CartasEnumeradas = new List<string>();
+            CartasRevueltas = new List<string>();
+            CartasSeleccionadas = new ArrayList();
+            for (int i = 0; i < 8; i++)
+            {
+                CartasEnumeradas.Add(i.ToString());
+                CartasEnumeradas.Add(i.ToString());
+            }
+            var NumeroAleatorio = new Random();
+            var resultado = CartasEnumeradas.OrderBy(item => NumeroAleatorio.Next());
+            foreach (string ValorCarta in resultado)
+            {
+                CartasRevueltas.Add(ValorCarta);
+            }
+            var tablaPanel = new TableLayoutPanel();
+            tablaPanel.RowCount = TamainColumnasFilas;
+            tablaPanel.ColumnCount = TamainColumnasFilas;
+            for (int i = 0; i < TamainColumnasFilas; i++)
+            {
+                var Porcentaje = 150f / (float)TamainColumnasFilas - 10;
+                tablaPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, Porcentaje));
+                tablaPanel.RowStyles.Add(new RowStyle(SizeType.Percent, Porcentaje));
+
+            }
+
+
+            int contadrofichas = 1;
+            for (var i = 0; i < TamainColumnasFilas; i++)
+            {
+                for (var j = 0; j < TamainColumnasFilas; j++)
+                {
+                    var CartasJuego = new PictureBox();
+                    CartasJuego.Name = string.Format("{0}", contadrofichas);
+                    CartasJuego.Dock = DockStyle.Fill;
+                    CartasJuego.SizeMode = PictureBoxSizeMode.StretchImage;
+                    //GiraraImagenes*//
+                    CartasJuego.Image = Properties.Resources.zoo2;
+                    CartasJuego.Cursor = Cursors.Hand;
+                    CartasJuego.Click += btncarta_Click;
+                    tablaPanel.Controls.Add(CartasJuego, j, i);
+                    contadrofichas++;
+
+                }
+            }
+            tablaPanel.Dock = DockStyle.Fill;
+            paneljuego.Controls.Add(tablaPanel);
+
+        }
+        private void Memorama_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnreinicio_Click(object sender, EventArgs e)
+        {
+            iniciarjuego();
+        }
+
+        private void btncarta_Click(object sender, EventArgs e)
+        {
+            if (CartasSeleccionadas.Count < 2)
+            {
+                Movimiento++;
+                label2.Text = Convert.ToString(Movimiento);
+                var cartasSelecionadasUsuario = (PictureBox)sender;
+                CartaActual = Convert.ToInt32(CartasRevueltas[Convert.ToInt32(cartasSelecionadasUsuario.Name) - 1]);
+                cartasSelecionadasUsuario.Image = RecuperarImagen(CartaActual);
+                CartasSeleccionadas.Add(cartasSelecionadasUsuario);
+
+                if (CartasSeleccionadas.Count == 2)
+                {
+                    CartaTemporal1 = (PictureBox)CartasSeleccionadas[0];
+                    CartaTemporal2 = (PictureBox)CartasSeleccionadas[1];
+                    int Carta1 = Convert.ToInt32(CartasRevueltas[Convert.ToInt32(CartaTemporal1.Name) - 1]);
+                    int Carta2 = Convert.ToInt32(CartasRevueltas[Convert.ToInt32(CartaTemporal2.Name) - 1]);
+
+                    if (Carta1 != Carta2)
+                    {
+                        timer1.Enabled = true;
+                        timer1.Start();
+                    }
+                    else
+                    {
+                        CantidadDeCartasVolteadas++;
+                        if (CantidadDeCartasVolteadas > 7)
+                        {
+                            MessageBox.Show("El juego termino");
+                        }
+                        CartaTemporal1.Enabled = false; CartaTemporal2.Enabled = false;
+                        CartasSeleccionadas.Clear();
+                    }
+                }
+
+
+            }
+        }
+
+              public Bitmap RecuperarImagen(int NumeroImagen){
+        Bitmap TmpImg=new Bitmap (200 ,100);
+            switch (NumeroImagen){
+                case 0:TmpImg=Properties.Resources.m1;
+                    break;
+                case 1: TmpImg = Properties.Resources.m2;
+                    break;
+                case 2: TmpImg = Properties.Resources.m3;
+                    break;
+                case 3: TmpImg = Properties.Resources.m4;
+                    break;
+                case 4: TmpImg = Properties.Resources.m5;
+                    break;
+                case 5: TmpImg = Properties.Resources.m6;
+                    break;
+                case 6: TmpImg = Properties.Resources.m7;
+                    break;
+                case 7: TmpImg = Properties.Resources.m8;
+                    break;
+                
+                default:TmpImg= (Bitmap) Properties.Resources.ResourceManager.GetObject("img"+NumeroImagen);
+                    break;
+            }
+        return TmpImg;
+        }
+
+              private void timer1_Tick(object sender, EventArgs e)
+              {
+
+                  int TiempoVirarCarta = 1;
+                  if (TiempoVirarCarta == 1)
+                  {
+                      CartaTemporal1.Image = Properties.Resources.zoo2;
+                      CartaTemporal2.Image = Properties.Resources.zoo2;
+                      CartasSeleccionadas.Clear();
+                      TiempoVirarCarta = 0;
+                      timer1.Stop();
+
+
+
+                  }
+              }
+
+              private void button1_Click(object sender, EventArgs e)
+              {
+                  Form11 k = new Form11();
+                  k.Visible = true;
+                  Visible = false;
+              }
+
+              private void paneljuego_Paint(object sender, PaintEventArgs e)
+              {
+
+              }
+    }
